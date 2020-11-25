@@ -33,14 +33,10 @@ var (
 	ErrorNotUpdated             = ErrorTemplate{Code: 10017, Message: "Resource not updated", status: http.StatusBadRequest}
 	ErrorNotCreated             = ErrorTemplate{Code: 10018, Message: "Resource not created", status: http.StatusBadRequest}
 	ErrorNotDeleted             = ErrorTemplate{Code: 10019, Message: "Resource not deleted", status: http.StatusBadRequest}
-	ErrorHasExisted             = ErrorTemplate{Code: 10020, Message: "Resource has existed", status: http.StatusBadRequest}
+	ErrorAlreadyExist           = ErrorTemplate{Code: 10020, Message: "Resource already exist", status: http.StatusBadRequest}
 
-	// Product Error
-	ErrorInvalidCodeError = ErrorTemplate{Code: 20001, Message: "Code is invalid", status: http.StatusOK}
-	ErrorOutOfStockError  = ErrorTemplate{Code: 20002, Message: "Out of stock", status: http.StatusOK}
-
-	// Order Error
-	ErrorInvalidStatus = ErrorTemplate{Code: 3001, Message: "Invalid status", status: http.StatusForbidden}
+	// User Error
+	ErrorInvalidPassword = ErrorTemplate{Code: 20001, Message: "Invalid password", status: http.StatusBadRequest}
 )
 
 var errorMessagePrefix = "unknown service"
