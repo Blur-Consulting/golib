@@ -1,0 +1,63 @@
+package auth
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"strings"
+
+	"github.com/dgrijalva/jwt-go"
+)
+
+const userClaimContextName = "userClaim"
+
+type UserClaim struct {
+	TenantCode string
+	UserId     int64
+	Username   string
+	jwt.StandardClaims
+}
+
+func (UserClaim) FromCtx(ctx context.Context) UserClaim {
+	v := ctx.Value(userClaimContextName)
+	if v == nil {
+		return UserClaim{}
+	}
+
+	userClaim, ok := v.(UserClaim)
+	if !ok {
+		return UserClaim{}
+	}
+
+	return userClaim
+}
+
+func (UserClaim) FromToken(token string) (UserClaim, error) {
+	var userClaim UserClaim
+
+	si := strings.Index(token, ".")
+	li := strings.LastIndex(token, ".")
+	if si == -1 || li == -1 || si == li {
+		return userClaim, errors.New("Invalid token")
+	}
+
+	payload := token[si+1 : li]
+	if payload == "" {
+		return userClaim, errors.New("Invalid token")
+	}
+
+	payloadBytes, err := decodeSegment(payload)
+	if err != nil {
+		return userClaim, err
+	}
+
+	if err := json.Unmarshal(payloadBytes, &userClaim); err != nil {
+		return userClaim, err
+	}
+
+	if userClaim.Audience == "" {
+		return userClaim, errors.New("Invalid token")
+	}
+
+	return userClaim, nil
+}
