@@ -22,11 +22,9 @@ func UserClaimMiddleware(skipPaths ...string) echo.MiddlewareFunc {
 
 			req := c.Request()
 			userClaim, err := newUserClaimFromHttpReq(req)
-			if err != nil {
-				return err
+			if err == nil {
+				c.SetRequest(req.WithContext(context.WithValue(req.Context(), userClaimContextName, userClaim)))
 			}
-
-			c.SetRequest(req.WithContext(context.WithValue(req.Context(), userClaimContextName, userClaim)))
 
 			return next(c)
 		}
@@ -45,8 +43,12 @@ func newUserClaimFromHttpReq(req *http.Request) (UserClaim, error) {
 		return UserClaim{}, tokenErr
 	}
 
-	userClaim.Username = req.Header.Get("X-Username")
-	userClaim.UserId, _ = strconv.ParseInt(req.Header.Get("X-User-Id"), 10, 64)
+	if username := req.Header.Get("X-Username"); username != "" {
+		userClaim.Username = req.Header.Get("X-Username")
+	}
+	if userId, _ := strconv.ParseInt(req.Header.Get("X-User-Id"), 10, 64); userId != 0 {
+		userClaim.UserId, _ = strconv.ParseInt(req.Header.Get("X-User-Id"), 10, 64)
+	}
 
 	return userClaim, nil
 }

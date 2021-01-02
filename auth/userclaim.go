@@ -55,9 +55,9 @@ func (UserClaim) FromToken(token string) (UserClaim, error) {
 		return userClaim, err
 	}
 
-	if userClaim.Audience == "" {
-		return userClaim, errors.New("Invalid token")
-	}
+	// if userClaim.Audience == "" {
+	// 	return userClaim, errors.New("Invalid token")
+	// }
 
 	return userClaim, nil
 }
